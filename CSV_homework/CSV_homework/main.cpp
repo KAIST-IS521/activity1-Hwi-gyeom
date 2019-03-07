@@ -2,28 +2,29 @@
 #include <fstream>
 using namespace std;
 
-void csv_indexoutput(ifstream myfile,int idx)
+void csv_indexoutput(ifstream& myfile,int idx)
 {
 	cout << "결과는" << endl;
 
-	int index = 0;
+	int index = 1;
 	bool quote_mode = false;
 
 	int idx_buf = 0;
 	int idx_output = 0;
 	char buf[5000]=""; char output[5000]="";
 
-	while (index != idx)
+	myfile.getline(buf, 5000);
+	while (!myfile.eof())
 	{
 
-		myfile.getline(buf, 5000);
+
 
 		idx_buf = 0;
 		idx_output = 0;
 
 		if (quote_mode == false)
 		{
-			index++;
+			index=1;
 		}
 		
 
@@ -67,7 +68,7 @@ void csv_indexoutput(ifstream myfile,int idx)
 				{
 					if (buf[idx_buf] != '"')
 					{
-						output[idx_output] = buf[idx_buf];
+						output[idx_output] = buf[idx_buf]; idx_output++;
 					}
 					else
 					{
@@ -76,6 +77,10 @@ void csv_indexoutput(ifstream myfile,int idx)
 							output[idx_output] = buf[idx_buf];
 							idx_output++; idx_buf++;
 						}
+						else
+						{
+							quote_mode = !quote_mode;
+						}
 					}
 				}
 			}
@@ -83,7 +88,13 @@ void csv_indexoutput(ifstream myfile,int idx)
 		}
 
 
-
+		cout << output;
+		if (quote_mode== false)
+		{
+			cout << "  //";
+		}
+		cout<< endl;
+		myfile.getline(buf, 5000);
 	}
 	cout << "입니다" << endl;
 }
@@ -92,20 +103,11 @@ void csv_indexoutput(ifstream myfile,int idx)
 int main()
 {
 	
-	fstream myfile("이름들.csv",ios::in);
-
-
-	bool quote_mode = false;
-	char buf[5000]="";
-	char output[5000] = "";
-	myfile.getline(buf,5000);
-
-	int idx_buf = 0;
+	ifstream* myfile=new ifstream("C:\\Users\\user\\Documents\\카카오톡 받은 파일\\comma.csv");
 
 
 
-
-	cout <<buf<<endl;
+	csv_indexoutput(*myfile, 2);
 
 	
 	return 0;
