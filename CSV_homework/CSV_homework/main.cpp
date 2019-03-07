@@ -2,9 +2,76 @@
 #include <fstream>
 using namespace std;
 
+bool csv_vaild(ifstream& myfile, int idx)
+{//경로가 이상함, 열 갯수가 부족함, 모든 행이 같은 열을 가지지 않음
+	bool validchecker = 0;
+	bool after_first_line = false;
+	int past_index = 0;
+
+	validchecker = !myfile.is_open();
+
+
+	if (!validchecker)
+	{
+		int index = 1;
+		bool quote_mode = false;
+
+		int idx_buf = 0;
+		char buf[5000] = "";
+
+		myfile.getline(buf, 5000);
+		while (!myfile.eof())
+		{
+			idx_buf = 0;
+			if (quote_mode == false)
+			{
+				index = 1;
+			}
+
+
+			while (buf[idx_buf] != '\0')
+			{
+
+
+
+				if (quote_mode == false && buf[idx_buf] == ',')
+				{
+					index++;
+				}
+				if (buf[idx_buf] == '"')
+				{
+					quote_mode = !quote_mode;
+				}
+
+
+				idx_buf++;
+			}
+			if (!quote_mode)
+			{
+				validchecker = (index < idx);
+				if (validchecker) break;
+				if (after_first_line)
+				{
+					validchecker = !(past_index == index);
+				}
+				if (validchecker) break;
+
+
+				past_index = index;
+				after_first_line = true;
+			}
+			myfile.getline(buf, 5000);
+		}
+
+	}
+
+
+	return validchecker;
+}
+
 void csv_indexoutput(ifstream& myfile,int idx)
 {
-	cout << "결과는" << endl;
+	cout << "Result :" << endl;
 
 	int index = 1;
 	bool quote_mode = false;
@@ -96,18 +163,53 @@ void csv_indexoutput(ifstream& myfile,int idx)
 		cout<< endl;
 		myfile.getline(buf, 5000);
 	}
-	cout << "입니다" << endl;
+	cout << endl;
 }
 
 
-int main()
+int main(int argc, char* argv[])
 {
+	bool fail = false;
+	//char trajectory[200] = "C:\\Users\\user\\Documents\\카카오톡 받은 파일\\comma.csv";
 	
-	ifstream* myfile=new ifstream("C:\\Users\\user\\Documents\\카카오톡 받은 파일\\comma.csv");
+	for (int i = 0; i < argc; i++)
+	{
+		cout << "argv[" << i << "]="<<argv[i] << endl;
+	}
 
 
+	int idx = argv[2][0] - 0x30;
 
-	csv_indexoutput(*myfile, 2);
+	int csv_checker = 0;
+
+	while (argv[1][csv_checker] != '\0')
+	{
+		csv_checker++;
+	}
+
+	if (argv[1][csv_checker - 3] != 'c') { fail = true; }
+	if (argv[1][csv_checker - 2] != 's') { fail = true; }
+	if (argv[1][csv_checker - 1] != 'v') { fail = true; }
+
+	ifstream* myfile=new ifstream(argv[1]);
+
+	if (!fail)
+	{
+		fail = csv_vaild(*myfile, idx);
+	}
+	myfile->close();
+	myfile = new ifstream(argv[1]);
+
+	if (fail)
+	{
+		cout << "FAIL, CODE : 1"<<endl;
+	}
+	else
+	{
+		cout << "SUCCESS, CODE : 0" << endl;
+		csv_indexoutput(*myfile, idx);
+	}
+
 
 	
 	return 0;
