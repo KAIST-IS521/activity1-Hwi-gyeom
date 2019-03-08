@@ -1,3 +1,6 @@
-# FIXME
+# 언어 버전 및 실행환경
 
-You should modify this file to give concise description about your project.
+이게 버전인지는 잘 모르겠는데  C++ vc14.0..? 을 사용했습니다.
+컴파일 및 실행은 VUSUAL STUDIO 2015를 사용했으며
+
+라이브러리는 C++ 기본 라이브러리인  iostream과 fstream을 사용했습니다.
